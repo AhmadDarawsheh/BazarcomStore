@@ -2,13 +2,22 @@ const { Command } = require("commander");
 const program = new Command();
 const axios = require("axios");
 const readline = require("readline");
+const redis = require("redis");
+
+const client = redis.createClient({
+  host: "localhost",
+  port: 6379,
+});
+client.on("error", (err) => {
+  console.error("An Redis error has occured: ", error);
+});
 
 const r1 = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
 
-const cache = new Map();
+// const cache = new Map();
 
 let catalogServer = 1;
 let orderServer = 1;
@@ -34,7 +43,7 @@ const mainmenu = () => {
       r1.close();
       process.exit(0);
     } else {
-      program.parse([command, bookId],{from :'user'});
+      program.parse([command, bookId], { from: "user" });
       mainmenu();
     }
   });
@@ -51,24 +60,33 @@ program
   .description("Get the details of a book from database.")
   .action((bookId) => {
     const cacheKey = `catalog_${bookId}`;
-    if (cache.has(cacheKey)) {
-      console.log(catalogServer)
-      console.log("Cache hit", cache.get(cacheKey));
-      return;
-    }
-    console.log(catalogServer);
+    client.get(cacheKey, (err, cachedData) => {
+      if (err) {
+        console.log("Redis error ", err);
+        return;
+      }
+      if (cachedData) {
+        console.log("Cache Hit: ", JSON.parse(cachedData));
+        return;
+      }
+
+
+      console.log(catalogServer);
     const serverUrl = toggleCatalogServer();
 
-    console.log(serverUrl);
+    console.log("Fetching data from the server: ", serverUrl);
     axios
       .get(`${serverUrl}/Bazarcom/searchim/${bookId}`)
       .then((response) => {
-        console.log("Cache miss. Retrived data from server", response.data);
-        cache.set(cacheKey, response.data);
+        console.log("Cache miss. Retrived data from server ", response.data);
+        client.setex(cacheKey, 3600, JSON.stringify(response.data));
+        return;
       })
       .catch((err) => {
         console.error("Error retrieving data", err.message);
       });
+    });
+    
   });
 
 program
