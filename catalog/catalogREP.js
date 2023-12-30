@@ -4,9 +4,13 @@ const bodyParser = require("body-parser");
 
 const sqlite3 = require("sqlite3").verbose();
 
-const db = new sqlite3.Database("../msdb.db", sqlite3.OPEN_READWRITE, (err) => {
-  if (err) return console.error(err.message);
-});
+const db = new sqlite3.Database(
+  "../msdbREP.db",
+  sqlite3.OPEN_READWRITE,
+  (err) => {
+    if (err) return console.error(err.message);
+  }
+);
 
 app.use(bodyParser.json());
 
@@ -82,9 +86,7 @@ app.get("/Bazarcom/purchase/:id", (req, res) => {
           console.log(err);
         }
         v1 = result.stock;
-        console.log("books left in stock: ",result.stock);
-      
-
+        console.log("books left in stock: ", result.stock);
       });
 
       return res.send("purchased successfuly");
@@ -92,8 +94,6 @@ app.get("/Bazarcom/purchase/:id", (req, res) => {
     res.send("stock is empty");
   });
 });
-
-
 
 app.listen(3002, () => {
   console.log("server is running 3002");

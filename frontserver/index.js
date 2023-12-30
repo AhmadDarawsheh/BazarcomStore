@@ -52,6 +52,7 @@ program
   .action((bookId) => {
     const cacheKey = `catalog_${bookId}`;
     if (cache.has(cacheKey)) {
+      console.log(catalogServer)
       console.log("Cache hit", cache.get(cacheKey));
       return;
     }

@@ -55,5 +55,5 @@ app.get("/purchase/:id", async (req, res) => {
 // });
 
 app.listen(4001, () => {
-  console.log("order server is running");
+  console.log("order server is running 4001");
 });
