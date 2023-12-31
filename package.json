@@ -10,6 +10,7 @@
     "os1": "nodemon --cwd ./order ./order.js",
     "os2": "nodemon --cwd ./order ./orderREP.js",
     "start":"npm-run-all --parallel cs1 cs2 os1 os2"
+    
   },
   "keywords": [],
   "author": "",

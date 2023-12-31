@@ -43,12 +43,13 @@ app.get("/Bazarcom/search/all", (req, res) => {
 app.get("/Bazarcom/search/:topic", (req, res) => {
   const { topic } = req.params;
 
-  const sql = `SELECT id,title FROM books WHERE topic = '${topic}'`;
+  const sql = `SELECT * FROM books WHERE topic ='${topic}'`;
   db.all(sql, [], (err, rows) => {
     if (err) return console.error(err.message);
     rows.forEach((row) => {
-      res.json(row);
+      console.log(row);
     });
+    return res.json(rows);
   });
 });
 

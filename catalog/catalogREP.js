@@ -50,8 +50,9 @@ app.get("/Bazarcom/search/:topic", (req, res) => {
   db.all(sql, [], (err, rows) => {
     if (err) return console.error(err.message);
     rows.forEach((row) => {
-      res.json(row);
+      console.log(row);
     });
+    return res.json(rows);
   });
 });
 

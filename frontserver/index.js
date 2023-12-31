@@ -30,7 +30,7 @@ let orderServer = 1;
 const toggleCatalogServer = () => {
   const server = `http://localhost:300${catalogServer}`;
   catalogServer = (catalogServer % 2) + 1;
-  console.log(catalogServer);
+  // console.log(catalogServer);
   return server;
 };
 
@@ -42,18 +42,36 @@ const toggleOrderServer = () => {
 
 const invalidateCache = (key) => {
   client.del(key);
-  console.log("deleted")
+  console.log("deleted");
 };
 const mainmenu = () => {
+  console.log("\n");
+  console.log('Type "purchase [bookID]" to buy a book!');
+  console.log('Type "get [bookID]" to get a book!');
+  console.log('Type "list" to list all books!');
+  console.log('Type "search [topic]" to find books by topic');
+  // r1.question('Enter a comamand (Type "exit" to quit."):', (input) => {
+  //   const [command, bookId] = input.split(" ");
+  //   if (command == "exit") {
+  //     console.log("Exiting CLI ...");
+  //     r1.close();
+  //     process.exit(0);
+  //   } else {
+  //     program.parse([command,bookId], { from: "user" });
+  //     mainmenu();
+  //   }
+  // });
+
   r1.question('Enter a comamand (Type "exit" to quit."):', (input) => {
-    const [command, bookId] = input.split(" ");
-    if (command == "exit") {
-      console.log("Exiting CLI ...");
-      r1.close();
-      process.exit(0);
+    const args = input.split(" ").filter((arg) => arg.length > 0);
+    if (args[0] === "exit") {
+      console.log("Exiting CLI...");
+      rl.close();
     } else {
-      program.parse([command, bookId], { from: "user" });
-      mainmenu();
+      program.parseAsync([...args], { from: "user" }).catch((err) => {
+        console.error(err);
+        mainmenu(); // Re-prompt the main menu if there's an error
+      });
     }
   });
 };
@@ -61,7 +79,7 @@ const mainmenu = () => {
 app.post("/invalidateCache", async (req, res) => {
   try {
     const { key } = req.body;
-    const invalid = `catalog_${key}`
+    const invalid = `catalog_${key}`;
     await invalidateCache(invalid);
     console.log("Cache Invalidated");
   } catch (err) {
@@ -76,6 +94,32 @@ program
   .version("1.0.0");
 
 program
+  .command("add <title> <stock> <cost> <topic>")
+  .alias("l")
+  .description("List all the books.")
+  .action((title, stock, cost, topic) => {
+    const serverUrl = toggleCatalogServer();
+    console.log("Adding data to the server: ", serverUrl);
+
+    const data = {
+      title,
+      stock,
+      cost,
+      topic,
+    };
+
+    axios
+      .post(`${serverUrl}/Bazarcom/addBook`, data)
+      .then((response) => {
+        console.log("\nListing the books: ", response.data);
+        mainmenu();
+      })
+      .catch((err) => {
+        console.error("Error purchasing the book", err.message);
+      });
+  });
+
+program
   .command("get <bookId>")
   .alias("g")
   .description("Get the details of a book from database.")
@@ -88,6 +132,7 @@ program
       }
       if (cachedData) {
         console.log("\nCache Hit: ", JSON.parse(cachedData));
+        mainmenu();
         return;
       }
 
@@ -102,8 +147,9 @@ program
             "\nCache miss. Retrived data from server ",
             response.data
           );
+          console.log("\n");
           client.setex(cacheKey, 3600, JSON.stringify(response.data));
-          return;
+          mainmenu();
         })
         .catch((err) => {
           console.error("Error retrieving data", err.message);
@@ -114,7 +160,7 @@ program
 program
   .command("purchase <bookId>")
   .alias("p")
-  .description("List all the books.")
+  .description("Buy a book!")
   .action((bookId) => {
     const serverUrl = toggleOrderServer();
     console.log("Fetching data from the server: ", serverUrl);
@@ -123,14 +169,75 @@ program
       .get(`${serverUrl}/purchase/${bookId}`)
       .then((response) => {
         console.log("\nBook purchased successfully!");
+        mainmenu();
       })
       .catch((err) => {
         console.error("Error purchasing the book", err.message);
       });
   });
 
+program
+  .command("list")
+  .alias("l")
+  .description("List all the books.")
+  .action(() => {
+    const serverUrl = toggleCatalogServer();
+    console.log("Fetching data from the server: ", serverUrl);
+
+    axios
+      .get(`${serverUrl}/Bazarcom/search/all`)
+      .then((response) => {
+        console.log("\nListing the books: ", response.data);
+        mainmenu();
+      })
+      .catch((err) => {
+        console.error("Error purchasing the book", err.message);
+      });
+  });
+
+program
+  .command("search <topic> <topic2>")
+  .alias("g")
+  .description("List all the books.")
+  .action((topic, topic2) => {
+    const both = `${topic} ${topic2}`;
+    console.log(both);
+    const cacheKey = `catalog_${both}`;
+    client.get(cacheKey, (err, cachedData) => {
+      if (err) {
+        console.log("Redis error ", err);
+        return;
+      }
+      if (cachedData) {
+        console.log("\nCache Hit: ", JSON.parse(cachedData));
+        mainmenu();
+        return;
+      }
+
+      console.log(catalogServer);
+      const serverUrl = toggleCatalogServer();
+
+      console.log("Fetching data from the server: ", serverUrl);
+      console.log(both);
+      axios
+        .get(`${serverUrl}/Bazarcom/search/${both}`)
+        .then((response) => {
+          console.log(
+            "\nCache miss. Retrived data from server ",
+            response.data
+          );
+          console.log("\n");
+          client.setex(cacheKey, 3600, JSON.stringify(response.data));
+          mainmenu();
+        })
+        .catch((err) => {
+          console.error("Error retrieving data", err.message);
+        });
+    });
+  });
+
 app.listen(5000, () => {
-  console.log("\n");
-  console.log("Frontend server is running...");
+  // console.log("\n");
+  // console.log("Frontend server is running...");
 });
 mainmenu();

@@ -13,7 +13,7 @@ let catalogServer = 1;
 const toggleCatalogServer = () => {
   const server = `http://localhost:300${catalogServer}`;
   catalogServer = (catalogServer % 2) + 1;
-  console.log(catalogServer);
+  // console.log(catalogServer);
   return server;
 };
 
