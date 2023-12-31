@@ -1,9 +1,8 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-
+const axios = require("axios")
 const sqlite3 = require("sqlite3").verbose();
-
 const db = new sqlite3.Database(
   "../msdbREP.db",
   sqlite3.OPEN_READWRITE,
@@ -80,6 +79,7 @@ app.get("/Bazarcom/purchase/:id", (req, res) => {
     let v1;
 
     if (row.stock) {
+      axios.post("http://localhost:5000/invalidateCache", { key: `${id}` });
       const sql = `UPDATE books SET stock = stock - 1 WHERE id = ? RETURNING stock`;
       db.get(sql, [id], (err, result) => {
         if (err) {
