@@ -8,15 +8,23 @@ const axios = require("axios");
 //   if (err) return console.error(err.message);
 // });
 
+
+let catalogServer = 1;
+const toggleCatalogServer = () => {
+  const server = `http://localhost:300${catalogServer}`;
+  catalogServer = (catalogServer % 2) + 1;
+  // console.log(catalogServer);
+  return server;
+};
 app.use(bodyParser.json());
 
 app.get("/purchase/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
 
+    const serverUrl = toggleCatalogServer();
     const response = await axios.get(
-      `http://localhost:3000/Bazarcom/purchase/${id}`
+      `${serverUrl}/Bazarcom/purchase/${id}`
     );
     console.log(response.data);
     const message = response.data;
@@ -55,5 +63,5 @@ app.get("/purchase/:id", async (req, res) => {
 // });
 
 app.listen(4001, () => {
-  console.log("order server is running");
+  console.log("order server is running 4001");
 });
