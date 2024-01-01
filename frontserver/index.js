@@ -82,7 +82,7 @@ app.post("/invalidateCache", async (req, res) => {
     const invalid = `catalog_${key}`;
     await invalidateCache(invalid);
     console.log("Cache Invalidated");
-    mainmenu
+    mainmenu();
   } catch (err) {
     console.error("Error invalidating cache", err);
     res.json({ message: "Error invalidating cache" });
