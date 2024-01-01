@@ -42,7 +42,6 @@ const toggleOrderServer = () => {
 
 const invalidateCache = (key) => {
   client.del(key);
-  console.log("deleted");
 };
 const mainmenu = () => {
   console.log("\n");
@@ -83,6 +82,7 @@ app.post("/invalidateCache", async (req, res) => {
     const invalid = `catalog_${key}`;
     await invalidateCache(invalid);
     console.log("Cache Invalidated");
+    mainmenu
   } catch (err) {
     console.error("Error invalidating cache", err);
     res.json({ message: "Error invalidating cache" });
@@ -112,7 +112,7 @@ program
     axios
       .post(`${serverUrl}/Bazarcom/addBook`, data)
       .then((response) => {
-        console.log("\nListing the books: ", response.data);
+        console.log("\nAdding book to store ", response.data);
         mainmenu();
       })
       .catch((err) => {
