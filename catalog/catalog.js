@@ -3,10 +3,13 @@ const app = express();
 const bodyParser = require("body-parser");
 const axios = require("axios");
 const sqlite3 = require("sqlite3").verbose();
-
-const db = new sqlite3.Database("../msdb.db", sqlite3.OPEN_READWRITE, (err) => {
-  if (err) return console.error(err.message);
-});
+const db = new sqlite3.Database(
+  "../msdb.db",
+  sqlite3.OPEN_READWRITE,
+  (err) => {
+    if (err) return console.error(err.message);
+  }
+);
 
 app.use(bodyParser.json());
 
@@ -17,13 +20,13 @@ app.post("/Bazarcom/addBook", (req, res) => {
   const { title, stock, cost, topic } = req.body;
 
   
+
   const insert = `INSERT INTO books(title,stock,cost,topic) VALUES (?,?,?,?)`;
   db.run(insert, [title, stock, cost, topic], (err) => {
     if (err) return console.error(err.message);
   });
 
   res.json({ message: "success", title, stock, cost, topic });
-
 });
 
 app.get("/Bazarcom/search/all", (req, res) => {
@@ -43,7 +46,7 @@ app.get("/Bazarcom/search/all", (req, res) => {
 app.get("/Bazarcom/search/:topic", (req, res) => {
   const { topic } = req.params;
 
-  const sql = `SELECT * FROM books WHERE topic ='${topic}'`;
+  const sql = `SELECT id,title FROM books WHERE topic = '${topic}'`;
   db.all(sql, [], (err, rows) => {
     if (err) return console.error(err.message);
     rows.forEach((row) => {
@@ -74,25 +77,28 @@ app.get("/Bazarcom/purchase/:id", (req, res) => {
       return console.log(err.message);
     }
 
-    let v1;
+    var v1;
 
     if (row.stock) {
       axios.post("http://localhost:5000/invalidateCache", { key: `${id}` });
-      const sql = `UPDATE books SET stock = stock - 1 WHERE id = ? RETURNING stock`;
+      const sql = `UPDATE books SET stock = stock - 1 WHERE id = ? RETURNING *`;
       db.get(sql, [id], (err, result) => {
         if (err) {
           console.log(err);
         }
-        v1 = result.stock;
+        v1 = result;
+        axios.post("http://localhost:5000/invalidateCache", {
+          key: `${result.topic}`,
+        });
         console.log("books left in stock: ", result.stock);
       });
 
-      return res.send("purchased successfuly");
+      return res.json({ message: "purchased successfully" });
     }
     res.send("stock is empty");
   });
 });
 
 app.listen(3001, () => {
-  console.log("server is running 3001");
+  console.log("server is running 3002");
 });

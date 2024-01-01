@@ -77,24 +77,28 @@ app.get("/Bazarcom/purchase/:id", (req, res) => {
       return console.log(err.message);
     }
 
-    let v1;
+    var v1;
 
     if (row.stock) {
       axios.post("http://localhost:5000/invalidateCache", { key: `${id}` });
-      const sql = `UPDATE books SET stock = stock - 1 WHERE id = ? RETURNING stock`;
+      const sql = `UPDATE books SET stock = stock - 1 WHERE id = ? RETURNING *`;
       db.get(sql, [id], (err, result) => {
         if (err) {
           console.log(err);
         }
-        v1 = result.stock;
+        v1 = result;
+        axios.post("http://localhost:5000/invalidateCache", {
+          key: `${result.topic}`,
+        });
         console.log("books left in stock: ", result.stock);
       });
 
-      return res.send("purchased successfuly");
+      return res.json({ message: "purchased successfully" });
     }
     res.send("stock is empty");
   });
 });
+
 
 app.listen(3002, () => {
   console.log("server is running 3002");
