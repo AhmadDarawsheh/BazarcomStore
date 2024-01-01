@@ -46,6 +46,7 @@ const invalidateCache = (key) => {
 };
 const mainmenu = () => {
   console.log("\n");
+  console.log('Type "add [title,stock,cost,topic]" to add a new book!');
   console.log('Type "purchase [bookID]" to buy a book!');
   console.log('Type "get [bookID]" to get a book!');
   console.log('Type "list" to list all books!');

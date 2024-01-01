@@ -16,14 +16,14 @@ db.run(sql);
 app.post("/Bazarcom/addBook", (req, res) => {
   const { title, stock, cost, topic } = req.body;
 
-  res.json({ message: "success", title, stock, cost, topic });
-
+  
   const insert = `INSERT INTO books(title,stock,cost,topic) VALUES (?,?,?,?)`;
   db.run(insert, [title, stock, cost, topic], (err) => {
     if (err) return console.error(err.message);
   });
 
-  res.json({ message: "sucess" });
+  res.json({ message: "success", title, stock, cost, topic });
+
 });
 
 app.get("/Bazarcom/search/all", (req, res) => {
