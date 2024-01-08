@@ -31,7 +31,6 @@ Important factors :
 ![Node.js](https://cdn.iconscout.com/icon/free/png-512/free-nodejs-226032.png?f=webp&w=256)
 <i class="fa-brands fa-node-js"></i>
 
-![Redis](https://i.morioh.com/82ba0ea49e.png)
   
 
 
