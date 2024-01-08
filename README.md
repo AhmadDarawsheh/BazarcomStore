@@ -28,14 +28,9 @@ Important factors :
 
 
 
-![Node.js](https://cdn.iconscout.com/icon/free/png-512/free-nodejs-226032.png?f=webp&w=256)
-<i class="fa-brands fa-node-js"></i>
 ![Redis](https://img.icons8.com/color/48/000000/redis.png)
 ![Node.js](https://img.icons8.com/color/48/000000/nodejs.png)
-<img src="https://img.icons8.com/color/48/000000/redis.png" alt="Redis" width="50" height="50"/>
-<img src="https://img.icons8.com/color/48/000000/nodejs.png" alt="Node.js" width="50" height="50"/>
 
-  
 
 
 
