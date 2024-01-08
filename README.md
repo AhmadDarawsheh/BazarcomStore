@@ -14,11 +14,11 @@ This is a web store called Bazarcom based on NodeJS to let customers be able to 
 
 Important factors :
 
-  1- Redis (caching package).
-  2- Load balancing using Round-Robin algorithms.
-  3- frontend server using Commander and Readline packages to perform as CLI.
-  4- Axios package so server can communicate with each other.
-  5- nodemon package to run the backend servers.
+  1- Redis (caching package). <br>
+  2- Load balancing using Round-Robin algorithms. <br>
+  3- frontend server using Commander and Readline packages to perform as CLI. <br>
+  4- Axios package so server can communicate with each other. <br>
+  5- nodemon package to run the backend servers. <br>
   
 
 
