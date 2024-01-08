@@ -30,6 +30,8 @@ Important factors :
 
 ![Node.js](https://cdn.iconscout.com/icon/free/png-512/free-nodejs-226032.png?f=webp&w=256)
 <i class="fa-brands fa-node-js"></i>
+
+![Node.js](https://imgur.com/a/4UP7yWO)
   
 
 
